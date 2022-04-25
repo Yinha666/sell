@@ -5,8 +5,7 @@ const user = require('./user')
 const sell = require('./sell')
 
 const mocks = [
-  ...user,
-  ...sell
+  ...sell,
 ]
 
 // for front mock
