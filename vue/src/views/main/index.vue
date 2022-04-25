@@ -72,6 +72,10 @@
           {{ scope.row.endtime }}
         </template>
       </el-table-column>
+
+      <el-table-column label="操作" align="center">
+          <el-button type="primary">商品详情</el-button>
+      </el-table-column>
     </el-table>
 
     <h2>当前账户拍卖记录</h2>
@@ -120,26 +124,53 @@
           <el-tag :type="scope.row.status | statusFilter">{{ scope.row.status }}</el-tag>
         </template>
       </el-table-column>
-
-      
     </el-table>
 
-     <h2>当前账户发布拍卖记录</h2>
+    <h2>当前账户发布拍卖记录</h2>
     <el-table
+    :data="addrbuyList"
+      border
       style="width: 100%">
-      <el-table-column
-        prop="date"
-        label="日期"
-        width="180">
+
+      <el-table-column label="图片"  align="center">
+        <template slot-scope="scope">
+           <el-image 
+            style="width: 100px; height: 100px"
+            :src="scope.row.image" 
+            :preview-src-list="[scope.row.image]">
+          </el-image>
+        </template>
       </el-table-column>
-      <el-table-column
-        prop="name"
-        label="姓名"
-        width="180">
+
+      <el-table-column align="center" label="名字">
+        <template slot-scope="scope">
+          {{ scope.row.name }}
+        </template>
       </el-table-column>
-      <el-table-column
-        prop="address"
-        label="地址">
+      <el-table-column align="center" label="新/旧">
+        <template slot-scope="scope">
+          {{ scope.row.neworold }}
+        </template>
+      </el-table-column><el-table-column align="center" label="出价">
+        <template slot-scope="scope">
+          {{ scope.row.price }}
+        </template>
+      </el-table-column><el-table-column align="center" label="起拍时间">
+        <template slot-scope="scope">
+          {{ scope.row.starttime }}
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" label="结束时间">
+        <template slot-scope="scope">
+          {{ scope.row.endtime }}
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" label="拍卖状态">
+        <template slot-scope="scope">
+          <el-tag :type="scope.row.status | statusFilter">{{ scope.row.status }}</el-tag>
+        </template>
       </el-table-column>
     </el-table>
 
