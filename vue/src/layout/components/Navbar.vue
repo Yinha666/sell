@@ -5,28 +5,16 @@
     <breadcrumb class="breadcrumb-container" />
 
     <div class="right-menu">
-      <el-dropdown class="avatar-container" trigger="click">
-        <div class="avatar-wrapper">
-          <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
-          <i class="el-icon-caret-bottom" />
-        </div>
-        <el-dropdown-menu slot="dropdown" class="user-dropdown">
-          <router-link to="/">
-            <el-dropdown-item>
-              Home
-            </el-dropdown-item>
-          </router-link>
-          <a target="_blank" href="https://github.com/PanJiaChen/vue-admin-template/">
-            <el-dropdown-item>Github</el-dropdown-item>
-          </a>
-          <a target="_blank" href="https://panjiachen.github.io/vue-element-admin-site/#/">
-            <el-dropdown-item>Docs</el-dropdown-item>
-          </a>
-          <el-dropdown-item divided @click.native="logout">
-            <span style="display:block;">Log Out</span>
-          </el-dropdown-item>
+      <el-button v-if="!islogin" type="primary" style="margin-right: 10px;" @click="connectToMetaMask" >链接钱包</el-button>
+      <el-dropdown v-if="islogin" > 
+        <span class="el-dropdown-link">
+          当前账户：{{account}}<i class="el-icon-arrow-down el-icon--right"></i>
+        </span>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item divided>账户登出</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
+
     </div>
   </div>
 </template>
@@ -41,25 +29,53 @@ export default {
     Breadcrumb,
     Hamburger
   },
+  data() {
+    return {
+      islogin: false,
+      account: '',
+    }
+  },
   computed: {
     ...mapGetters([
       'sidebar',
       'avatar'
     ])
   },
+  async created() {
+    console.log(ethereum.selectedAddress);
+    
+    // const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+    // console.log(accounts)
+  },
   methods: {
-    toggleSideBar() {
-      this.$store.dispatch('app/toggleSideBar')
-    },
     async logout() {
       await this.$store.dispatch('user/logout')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+    },
+    toggleSideBar() {
+      this.$store.dispatch('app/toggleSideBar')
+    },
+    async connectToMetaMask(){
+      console.log('@@@');
+
+      if (typeof window.ethereum === "undefined") {
+        alert("metamask not install yet");
+      } else {
+        console.log('yes you have metamask !!');
+        const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+        this.islogin = true
+        console.log(accounts);
+        this.account = accounts[0]
+        
+      }
+
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+
 .navbar {
   height: 50px;
   overflow: hidden;
@@ -91,48 +107,6 @@ export default {
 
     &:focus {
       outline: none;
-    }
-
-    .right-menu-item {
-      display: inline-block;
-      padding: 0 8px;
-      height: 100%;
-      font-size: 18px;
-      color: #5a5e66;
-      vertical-align: text-bottom;
-
-      &.hover-effect {
-        cursor: pointer;
-        transition: background .3s;
-
-        &:hover {
-          background: rgba(0, 0, 0, .025)
-        }
-      }
-    }
-
-    .avatar-container {
-      margin-right: 30px;
-
-      .avatar-wrapper {
-        margin-top: 5px;
-        position: relative;
-
-        .user-avatar {
-          cursor: pointer;
-          width: 40px;
-          height: 40px;
-          border-radius: 10px;
-        }
-
-        .el-icon-caret-bottom {
-          cursor: pointer;
-          position: absolute;
-          right: -20px;
-          top: 25px;
-          font-size: 12px;
-        }
-      }
     }
   }
 }
