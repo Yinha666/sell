@@ -1,21 +1,21 @@
-import "../stylesheets/app.css";
+// import "../stylesheets/app.css";
 
 // import Web3 from "web3";
-import {
-  default as Web3
-} from 'web3';
-import {
-  default as contract
-} from 'truffle-contract'
+// import {
+//   default as Web3
+// } from 'web3';
+// import {
+//   default as contract
+// } from 'truffle-contract'
 //var provider = new Web3.providers.HttpProvider("http://localhost:8545");
 // var Web3EthContract = require('web3-eth-contract');
 
-import ecommerce_store_artifacts from '../../build/contracts/EcommerceStore.json'
+// import ecommerce_store_artifacts from '../../build/contracts/EcommerceStore.json'
 //var StandardEventJson = require("../../build/contracts/EcommerceStore.json");
 //var EcommerceStore = new web3.eth.Contract(ecommerce_store_artifacts['abi'],'0xF4CEAE9a85623E35B5d10eeB6E7b15B5Fa98c16D');
 
 const ipfsAPI = require('ipfs-api');
-const ethUtil = require('ethereumjs-util');
+// const ethUtil = require('ethereumjs-util');
 // var address = "0x663951f04B0DFF5c0e338770f4ab28D73DC779cB";
 // var EcommerceStore = new web3.eth.Contract(ecommerce_store_artifacts.abi,address);
 var EcommerceStore = contract(ecommerce_store_artifacts);//['abi']
@@ -43,6 +43,7 @@ window.App = {
       const file = event.target.files[0]
       reader = new window.FileReader()
       reader.readAsArrayBuffer(file)
+      console.log(reader)
     });
 
     $("#add-item-to-store").submit(function(event) {
@@ -53,8 +54,9 @@ window.App = {
       Object.keys(params).forEach(function(v) {
         decodedParams[v] = decodeURIComponent(decodeURI(params[v]));
       });
+
       saveProduct(reader, decodedParams);
-      event.preventDefault();
+      // event.preventDefault();
     });
 
     $("#finalize-auction").submit(function(event) {
