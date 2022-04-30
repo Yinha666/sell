@@ -1,25 +1,25 @@
-// import "../stylesheets/app.css";
+import "../stylesheets/app.css";
 
-import Web3 from "web3";
+// import Web3 from "web3";
 import {
   default as Web3
 } from 'web3';
 import {
   default as contract
 } from 'truffle-contract'
-var provider = new Web3.providers.HttpProvider("http://localhost:8545");
-var Web3EthContract = require('web3-eth-contract');
+//var provider = new Web3.providers.HttpProvider("http://localhost:8545");
+// var Web3EthContract = require('web3-eth-contract');
 
 import ecommerce_store_artifacts from '../../build/contracts/EcommerceStore.json'
-var StandardEventJson = require("../../build/contracts/EcommerceStore.json");
-var EcommerceStore = new web3.eth.Contract(ecommerce_store_artifacts['abi'],'0xF4CEAE9a85623E35B5d10eeB6E7b15B5Fa98c16D');
+//var StandardEventJson = require("../../build/contracts/EcommerceStore.json");
+//var EcommerceStore = new web3.eth.Contract(ecommerce_store_artifacts['abi'],'0xF4CEAE9a85623E35B5d10eeB6E7b15B5Fa98c16D');
 
 const ipfsAPI = require('ipfs-api');
 const ethUtil = require('ethereumjs-util');
-var address = "0x663951f04B0DFF5c0e338770f4ab28D73DC779cB";
+// var address = "0x663951f04B0DFF5c0e338770f4ab28D73DC779cB";
 // var EcommerceStore = new web3.eth.Contract(ecommerce_store_artifacts.abi,address);
 var EcommerceStore = contract(ecommerce_store_artifacts);//['abi']
-// EcommerceStore.setProvider(provider);
+//EcommerceStore.setProvider(provider);
 
 
 const ipfs = ipfsAPI({
@@ -43,7 +43,6 @@ window.App = {
       const file = event.target.files[0]
       reader = new window.FileReader()
       reader.readAsArrayBuffer(file)
-      console.log(reader)
     });
 
     $("#add-item-to-store").submit(function(event) {
@@ -54,9 +53,8 @@ window.App = {
       Object.keys(params).forEach(function(v) {
         decodedParams[v] = decodeURIComponent(decodeURI(params[v]));
       });
-
       saveProduct(reader, decodedParams);
-      // event.preventDefault();
+      event.preventDefault();
     });
 
     $("#finalize-auction").submit(function(event) {
@@ -342,13 +340,10 @@ function saveProduct(reader, decodedParams) {
 }
 
 function saveProductToBlockchain(params, imageId, descId) {
-  // 返回时间戳
+
   let auctionStartTime = Date.parse(params["product-auction-start"]) / 1000;
-  // 增加天数时间戳
   let auctionEndTime = auctionStartTime + parseInt(params["product-auction-end"]) * 24 * 60 * 60;
   console.log(EcommerceStore);
-
-  
   EcommerceStore.deployed().then(function(i) {
     i.addProductToStore(params["product-name"], params["product-category"], imageId, descId, auctionStartTime,
       auctionEndTime, web3.toWei(params["product-price"], 'ether'), parseInt(params["product-condition"]),
