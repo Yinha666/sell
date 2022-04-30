@@ -28,7 +28,7 @@
     "eslint-plugin-standard": "^2.0.0",
     "ethereumjs-util": "^5.1.2",
     "html-webpack-plugin": "^2.28.0",
-    "ipfs-api": "14.1.2",
+    "ipfs-api": "^14.1.2",
     "json-loader": "^0.5.4",
     "mongoose": "5.0.6",
     "style-loader": "^0.13.1",

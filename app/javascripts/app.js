@@ -1,25 +1,25 @@
 // import "../stylesheets/app.css";
 
-// import Web3 from "web3";
-// import {
-//   default as Web3
-// } from 'web3';
-// import {
-//   default as contract
-// } from 'truffle-contract'
-//var provider = new Web3.providers.HttpProvider("http://localhost:8545");
-// var Web3EthContract = require('web3-eth-contract');
+import Web3 from "web3";
+import {
+  default as Web3
+} from 'web3';
+import {
+  default as contract
+} from 'truffle-contract'
+var provider = new Web3.providers.HttpProvider("http://localhost:8545");
+var Web3EthContract = require('web3-eth-contract');
 
-// import ecommerce_store_artifacts from '../../build/contracts/EcommerceStore.json'
-//var StandardEventJson = require("../../build/contracts/EcommerceStore.json");
-//var EcommerceStore = new web3.eth.Contract(ecommerce_store_artifacts['abi'],'0xF4CEAE9a85623E35B5d10eeB6E7b15B5Fa98c16D');
+import ecommerce_store_artifacts from '../../build/contracts/EcommerceStore.json'
+var StandardEventJson = require("../../build/contracts/EcommerceStore.json");
+var EcommerceStore = new web3.eth.Contract(ecommerce_store_artifacts['abi'],'0xF4CEAE9a85623E35B5d10eeB6E7b15B5Fa98c16D');
 
 const ipfsAPI = require('ipfs-api');
-// const ethUtil = require('ethereumjs-util');
-// var address = "0x663951f04B0DFF5c0e338770f4ab28D73DC779cB";
+const ethUtil = require('ethereumjs-util');
+var address = "0x663951f04B0DFF5c0e338770f4ab28D73DC779cB";
 // var EcommerceStore = new web3.eth.Contract(ecommerce_store_artifacts.abi,address);
 var EcommerceStore = contract(ecommerce_store_artifacts);//['abi']
-//EcommerceStore.setProvider(provider);
+// EcommerceStore.setProvider(provider);
 
 
 const ipfs = ipfsAPI({
@@ -342,10 +342,13 @@ function saveProduct(reader, decodedParams) {
 }
 
 function saveProductToBlockchain(params, imageId, descId) {
-
+  // 返回时间戳
   let auctionStartTime = Date.parse(params["product-auction-start"]) / 1000;
+  // 增加天数时间戳
   let auctionEndTime = auctionStartTime + parseInt(params["product-auction-end"]) * 24 * 60 * 60;
   console.log(EcommerceStore);
+
+  
   EcommerceStore.deployed().then(function(i) {
     i.addProductToStore(params["product-name"], params["product-category"], imageId, descId, auctionStartTime,
       auctionEndTime, web3.toWei(params["product-price"], 'ether'), parseInt(params["product-condition"]),

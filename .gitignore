@@ -9,3 +9,4 @@ yarn-error.log*
 package-lock.json
 tests/**/coverage/
 vue/nohup.out
+log

@@ -108,6 +108,15 @@
 </template>
 
 <script>
+
+const ipfsAPI = require('ipfs-api');
+const ipfs = ipfsAPI({
+  host: 'localhost',
+  port: '5001',
+  protocol: 'http'
+});
+
+
 export default {
   data() {
     return {
@@ -132,8 +141,31 @@ export default {
         vue.form.image = this.result;
       };
     },
-    onSubmit() {
-      console.log(this.form);
+    async onSubmit() {
+      const image = this.form.image
+      const desc = this.form.desc
+
+      const imagehash = await ipfs.add(Buffer.from(image))
+      const deschash = await ipfs.add(Buffer.from(desc, 'utf-8'))
+
+      const imageid = imagehash[0].hash
+      const descid = deschash[0].hash
+
+      console.log(imageid)
+      console.log(descid)
+
+
+
+      // ipfs.add(image)
+      // .then((response) => {
+      //   console.log(response)
+      //   resolve(response[0].hash);
+      // }).catch((err) => {
+      //   console.error(err)
+      //   reject(err);
+      // })
+
+      
     },
     onCancel() {
       this.$message({
@@ -141,7 +173,7 @@ export default {
         type: "warning",
       });
     },
-
+    
     saveProductToBlockchain(params, imageId, descId) {
       let auctionStartTime = Date.parse(params["product-auction-start"]) / 1000;
       let auctionEndTime =
