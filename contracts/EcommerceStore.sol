@@ -48,6 +48,10 @@ contract EcommerceStore {
   mapping(uint => address) productIdToOwner;
 
   /*  添加产品到区块链*/
+  function hello() public view returns (string){
+    return "hello world";
+  }
+
   function addProductToStore(string memory _name, string memory _category, string memory _imageLink, string memory _descLink, uint _startTime, uint _endTime, uint _startPrice, uint condition) payable public {
     require(_startTime < _endTime);
     productIndex += 1;
