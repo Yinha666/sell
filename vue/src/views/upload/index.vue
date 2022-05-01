@@ -109,7 +109,15 @@
 
 <script>
 
+const Web3 = require('web3');
+const contract = require("truffle-contract");
 const ipfsAPI = require('ipfs-api');
+
+const ecommerce_store_artifacts = require('./abi/EcommerceStore.json')
+
+var EcommerceStore = contract(ecommerce_store_artifacts);//['abi']
+console.log(EcommerceStore)
+
 const ipfs = ipfsAPI({
   host: 'localhost',
   port: '5001',
