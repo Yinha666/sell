@@ -109,21 +109,19 @@
 
 <script>
 
-const Web3 = require('web3');
+const Web3 = require("web3");
 const contract = require("truffle-contract");
-const ipfsAPI = require('ipfs-api');
+const ipfsAPI = require("ipfs-api");
 
-const ecommerce_store_artifacts = require('./abi/EcommerceStore.json')
+const ecommerce_store_artifacts = require("../abi/EcommerceStore.json");
 
-var EcommerceStore = contract(ecommerce_store_artifacts);//['abi']
-console.log(EcommerceStore)
+var EcommerceStore = contract(ecommerce_store_artifacts); //['abi']]
 
 const ipfs = ipfsAPI({
-  host: 'localhost',
-  port: '5001',
-  protocol: 'http'
+  host: "localhost",
+  port: "5001",
+  protocol: "http",
 });
-
 
 export default {
   data() {
@@ -150,63 +148,68 @@ export default {
       };
     },
     async onSubmit() {
+      const accounts = await ethereum.request({
+        method: "eth_requestAccounts",
+      });
+      const defaultAccount = accounts[0];
+
+      if (!defaultAccount){
+        return "empty"
+      }
+
+      // new Web3(web3.currentProvider)
+      EcommerceStore.setProvider(web3.currentProvider);
+
+      console.log(defaultAccount);
+
       const image = this.form.image
       const desc = this.form.desc
 
-      const imagehash = await ipfs.add(Buffer.from(image))
-      const deschash = await ipfs.add(Buffer.from(desc, 'utf-8'))
+      if (!imageid|| !descid){
+        console.log('empty')
+        return
+      }
 
-      const imageid = imagehash[0].hash
-      const descid = deschash[0].hash
+      const imagehash = await ipfs.add(Buffer.from(image));
+      const deschash = await ipfs.add(Buffer.from(desc, "utf-8"));
 
-      console.log(imageid)
-      console.log(descid)
+      const imageid = imagehash[0].hash;
+      const descid = deschash[0].hash;
+
+      console.log(imageid);
+      console.log(descid);
 
 
 
-      // ipfs.add(image)
-      // .then((response) => {
-      //   console.log(response)
-      //   resolve(response[0].hash);
-      // }).catch((err) => {
-      //   console.error(err)
-      //   reject(err);
-      // })
-
-      
+      let auctionStartTime = this.form.date / 1000;
+      let auctionEndTime = auctionStartTime + this.form.days * 24 * 60 * 60;
+      EcommerceStore.deployed()
+        .then(function (i) {
+          i.addProductToStore(
+            this.form.name,
+            this.form.type,
+            imageid,
+            descid,
+            auctionStartTime,
+            auctionEndTime,
+            web3.toWei(this.form.price, "ether"),
+            this.form.days
+          ),
+            {
+              from: web3.eth.accounts[0],
+              gas: 623164,
+            };
+        })
+        .then(function (f) {
+          console.log(f);
+        }).catch(err=>{
+          console.log(err)
+        });
     },
     onCancel() {
       this.$message({
         message: "cancel!",
         type: "warning",
-      });
-    },
-    
-    saveProductToBlockchain(params, imageId, descId) {
-      let auctionStartTime = Date.parse(params["product-auction-start"]) / 1000;
-      let auctionEndTime =
-        auctionStartTime +
-        parseInt(params["product-auction-end"]) * 24 * 60 * 60;
-      console.log(EcommerceStore);
-      EcommerceStore.deployed().then(function (i) {
-        i.addProductToStore(
-          params["product-name"],
-          params["product-category"],
-          imageId,
-          descId,
-          auctionStartTime,
-          auctionEndTime,
-          web3.toWei(params["product-price"], "ether"),
-          parseInt(params["product-condition"]),
-          {
-            from: web3.eth.accounts[0],
-            gas: 623164,
-          }
-        ).then(function (f) {
-          console.log(f);
-          $("#msg").show();
-          $("#msg").html("Your product was successfully added to your store!");
-        });
       });
     },
   },
