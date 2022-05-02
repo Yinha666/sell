@@ -4,7 +4,7 @@
       <el-col :span="12">
         <el-card :body-style="{ padding: '0px' }">
           <img
-            src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
+            :src="image"
             class="image"
           />
           <div style="padding: 14px">
@@ -84,16 +84,23 @@
       </div>
       <div>内容</div>
     </el-card>
-    
   </div>
 </template>
 
 <script>
 // import { getList } from '@/api/table'
-
+import request from "@/utils/request";
 export default {
+  async created() {
+    const url =
+      "http://localhost:8080/ipfs/QmTw31a5vBDuNnoR2tQJznurdkiYcZww4ws64Q3zv5JDNf";
+
+  this.image = await request(url)
+  },
   data() {
+
     return {
+      image: null,
       form: {
         price: null,
         pw: null,
@@ -109,7 +116,7 @@ export default {
       list: null,
       listLoading: true,
     };
-  }
+  },
 };
 </script>
 
