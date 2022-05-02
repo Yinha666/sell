@@ -1,4 +1,4 @@
-pragma solidity ^ 0.5.16;
+ragma solidity ^ 0.5.16;
 
 import './Escrow.sol';
 contract EcommerceStore {

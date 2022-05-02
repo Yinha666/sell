@@ -42,7 +42,7 @@
               </el-form-item>
 
               <el-form-item>
-                <el-button type="primary" click="">确认拍卖</el-button>
+                <el-button type="primary" @click="bid">确认拍卖</el-button>
               </el-form-item>
             </el-form>
           </div>
@@ -94,6 +94,8 @@
 
 <script>
 // import { getList } from '@/api/table'
+const ethUtil = require('ethereumjs-util');
+
 
 function getCurrentTime() {
   return Math.round(new Date());
@@ -114,23 +116,25 @@ const ipfs = ipfsAPI({
 });
 
 import { parseTime } from "@/utils";
+import detectEthereumProvider from '@metamask/detect-provider';
+
 
 export default {
   async created() {
     this.id = this.$route.query.id;
 
     const a = await ethereum.request({ method: "eth_requestAccounts" });
-    let acc = a[0];
+    this.acc = a[0]
 
-    var provider = new Web3.providers.HttpProvider("http://localhost:8545");
+    var provider = await detectEthereumProvider();
     EcommerceStore.setProvider(provider);
     let contract = await EcommerceStore.deployed();
+
+    this.contract = contract
 
     let productId = this.id;
 
     // test
-    productId = 1;
-
     var p = await contract.getProductById(productId);
 
     var productimage = await request("http://localhost:8080/ipfs/" + p[3]);
@@ -143,8 +147,8 @@ export default {
       type: p[2],
       image: productimage,
       desc: productdesc,
-      starttime: p[5] * 1000,
-      endtime: p[6] * 1000,
+      starttime: parseInt(p[5]),
+      endtime: parseInt(p[6]),
       price: Web3.utils.fromWei(p[7], "ether") + " ETH",
       status: productStatus,
     };
@@ -152,7 +156,7 @@ export default {
     this.product = product;
     console.log(product);
 
-    let currentTime = new Date().getTime()
+    let currentTime = new Date().getTime() / 1000
 
 
     if (productStatus == 1){
@@ -221,6 +225,7 @@ export default {
   data() {
     return {
       formtype: null,
+      id: null,
       product: {
         image: null,
       },
@@ -237,6 +242,41 @@ export default {
         number: null,
       },
     };
+  },
+  methods: {
+    async bid(){
+
+      let amount = this.form.price
+      let sendAmount = this.form.eth
+      let secretText = this.form.pw
+      console.log(Web3.utils.toWei(amount, 'ether'));
+      let sealedBid = '0x' + ethUtil.sha256(Buffer.from(amount+ secretText)).toString('hex');
+
+      let productId = this.id
+      console.log(sealedBid + " for " + productId);
+
+      this.contract.bid(parseInt(productId), sealedBid, {
+        value: Web3.utils.toWei(sendAmount),
+        from: this.acc,
+        gas: 440000
+      })
+      // this.contract.bid(parseInt(productId), bytesHash, {
+      //   from: this.acc,
+      //   value: 0x20
+
+      // }).then(result => {
+      //   this.contract.testHash(bigNumberAmount.toNumber(), secretText).then(r => {
+      //     // ecommerceStoreInstance.testHash(bidAmount, secretText).then(r => {
+      //     console.log('hash1 :', r)
+      //   })
+      //   // console.log('bid result :', result)
+      //   // location.reload(true)
+
+      // }).catch(e => {
+      //   console.log('bid err :', e)
+
+      // })
+    }
   },
 };
 </script>

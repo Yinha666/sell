@@ -12,3 +12,4 @@ vue/nohup.out
 log
 
 build/*
+build/contracts/**

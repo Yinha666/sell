@@ -198,6 +198,8 @@
 import { sellList, addrbuyList, addrsellList } from "@/api/sell";
 import { parseTime } from "@/utils";
 import request from "@/utils/request";
+import detectEthereumProvider from '@metamask/detect-provider';
+
 
 const Web3 = require("web3");
 
@@ -250,17 +252,20 @@ export default {
       let acc = a[0];
       console.log(acc);
 
-      var provider = new Web3.providers.HttpProvider("http://localhost:8545");
+      var provider = await detectEthereumProvider();
       EcommerceStore.setProvider(provider);
       let contract = await EcommerceStore.deployed();
 
+      let tmp = await contract.hello()
+      console.log(tmp);
+      
       var productList = [];
       const productNumber = await contract.productIndex();
-
       console.log("产品数量", parseInt(productNumber));
 
       for (let k = 0; k < parseInt(productNumber); k++) {
         var p = await contract.getProductById(k + 1);
+        console.log(p)
 
         var productimage = await request("http://localhost:8080/ipfs/" + p[3]);
         var productdesc = await request("http://localhost:8080/ipfs/" + p[4]);

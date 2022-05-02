@@ -108,10 +108,13 @@
 </template>
 
 <script>
+import detectEthereumProvider from '@metamask/detect-provider';
+
 const Web3 = require("web3");
 
 const contract = require("truffle-contract");
-const ecommerce_store_artifacts = require("../abi/EcommerceStore.json");
+const ecommerce_store_artifacts = require("@/../../build/contracts/EcommerceStore.json");
+
 var EcommerceStore = contract(ecommerce_store_artifacts); //['abi']]
 
 const ipfsAPI = require("ipfs-api");
@@ -172,12 +175,17 @@ export default {
       console.log(imageid);
       console.log(descid);
 
+      
       var provider = new Web3.providers.HttpProvider("http://localhost:8545");
+      provider = await detectEthereumProvider();
       EcommerceStore.setProvider(provider);
       let contract = await EcommerceStore.deployed();
 
       let bb = await contract.hello();
+      // let cc = await contract.nowtime();
       console.log(bb);
+      // console.log(cc);
+
 
       let auctionStartTime = this.form.date / 1000;
       let auctionEndTime = auctionStartTime + this.form.days * 24 * 60 * 60;
