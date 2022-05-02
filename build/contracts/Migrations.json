@@ -74,7 +74,7 @@
   "sourceMap": "26:480:2:-;;;178:50;8:9:-1;5:2;;;30:1;27;20:12;5:2;178:50:2;213:10;205:5;;:18;;;;;;;;;;;;;;;;;;26:480;;;;;;",
   "deployedSourceMap": "26:480:2:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;26:480:2;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;339:165;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;339:165:2;;;;;;;;;;;;;;;;;;;:::i;:::-;;74:36;;;:::i;:::-;;;;;;;;;;;;;;;;;;;50:20;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;232:103;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;232:103:2;;;;;;;;;;;;;;;;;:::i;:::-;;339:165;161:5;;;;;;;;;;;147:19;;:10;:19;;;143:26;;;401:19;434:11;401:45;;452:8;:21;;;474:24;;452:47;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;452:47:2;;;;8:9:-1;5:2;;;45:16;42:1;39;24:38;77:16;74:1;67:27;5:2;452:47:2;;;;168:1;143:26;339:165;:::o;74:36::-;;;;:::o;50:20::-;;;;;;;;;;;;;:::o;232:103::-;161:5;;;;;;;;;;;147:19;;:10;:19;;;143:26;;;321:9;294:24;:36;;;;143:26;232:103;:::o",
   "source": "pragma solidity ^0.5.16;\n\ncontract Migrations {\n  address public owner;\n  uint public last_completed_migration;\n\n  modifier restricted() {\n    if (msg.sender == owner) _;\n  }\n\n  constructor() public {\n    owner = msg.sender;\n  }\n\n  function setCompleted(uint completed) public restricted {\n    last_completed_migration = completed;\n  }\n\n  function upgrade(address new_address) public restricted {\n    Migrations upgraded = Migrations(new_address);\n    upgraded.setCompleted(last_completed_migration);\n  }\n}\n",
-  "sourcePath": "/home/ubuntu/work/sell/contracts/Migrations.sol",
+  "sourcePath": "/home/chrisyy/Desktop/sell/contracts/Migrations.sol",
   "ast": {
     "absolutePath": "project:/contracts/Migrations.sol",
     "exportedSymbols": {
@@ -1481,12 +1481,12 @@
     "5777": {
       "events": {},
       "links": {},
-      "address": "0x98B47E05b113E8540d9f9cE4AC4177382e7d7BE7",
-      "transactionHash": "0xfb574bef6bd997769bd9dfbb8d6bee29f198df16a6dbf715d612f6c1f05ce32c"
+      "address": "0xD9f5f440c3f264bE216BC83659417a4Ab9638362",
+      "transactionHash": "0xd07aa1b1fafa5a3f33150550b446a34b8c0232e248c8769382a9b577a2f4584d"
     }
   },
   "schemaVersion": "3.4.7",
-  "updatedAt": "2022-05-01T09:50:57.199Z",
+  "updatedAt": "2022-05-02T07:53:19.955Z",
   "networkType": "ethereum",
   "devdoc": {
     "methods": {}

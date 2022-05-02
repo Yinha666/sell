@@ -47,6 +47,10 @@ contract EcommerceStore {
   //定义一个存储商品与卖家对应结构
   mapping(uint => address) productIdToOwner;
 
+  function hello() public pure returns (string memory){
+    return "hello world";
+  }
+
   /*  添加产品到区块链*/
   function addProductToStore(string memory _name, string memory _category, string memory _imageLink, string memory _descLink, uint _startTime, uint _endTime, uint _startPrice, uint condition) payable public {
     require(_startTime < _endTime);
