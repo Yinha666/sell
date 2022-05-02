@@ -13,7 +13,7 @@
         <el-option label="1" :value="a"/>
       </el-select> -->
 
-      <!-- <el-select placeholder="选择新旧" style="width: 140px" class="filter-item" :model="neworold">
+      <!-- <el-select placeholder="选择新旧" style="width: 140px" class="filter-item" :model="condition">
         <el-option label="1" :value="a"/>
       </el-select> -->
 
@@ -38,11 +38,11 @@
       fit
       highlight-current-row
     >
-      <!-- <el-table-column align="center" label="ID">
+      <el-table-column align="center" label="ID">
         <template slot-scope="scope">
-          {{ scope.row.desc }}
+          {{ scope.row.id }}
         </template>
-      </el-table-column> -->
+      </el-table-column>
 
       <el-table-column label="图片" align="center">
         <template slot-scope="scope">
@@ -61,11 +61,11 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="新/旧" align="center">
+      <!-- <el-table-column label="新/旧" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.neworold | neworoldFilter }}</span>
+          <span>{{ scope.row.condition | conditionFilter }}</span>
         </template>
-      </el-table-column>
+      </el-table-column> -->
 
       <el-table-column label="起拍价格" align="center">
         <template slot-scope="scope">
@@ -86,7 +86,13 @@
       </el-table-column>
 
       <el-table-column label="操作" align="center">
-        <el-button type="primary">商品详情</el-button>
+        <template slot-scope="scope">
+          <el-button
+            type="primary"
+            @click="jumptoDetial(parseInt(scope.row.id))"
+            >商品详情</el-button
+          >
+        </template>
       </el-table-column>
     </el-table>
 
@@ -112,7 +118,7 @@
 
       <el-table-column align="center" label="新/旧">
         <template slot-scope="scope">
-          {{ scope.row.neworold }}
+          {{ scope.row.condition }}
         </template> </el-table-column
       ><el-table-column align="center" label="出价">
         <template slot-scope="scope">
@@ -159,7 +165,7 @@
       </el-table-column>
       <el-table-column align="center" label="新/旧">
         <template slot-scope="scope">
-          {{ scope.row.neworold }}
+          {{ scope.row.condition }}
         </template> </el-table-column
       ><el-table-column align="center" label="出价">
         <template slot-scope="scope">
@@ -209,12 +215,12 @@ export default {
       };
       return statusMap[status];
     },
-    neworoldFilter(status) {
+    conditionFilter(status) {
       const statusMap = {
         0: "新",
         1: "旧",
       };
-      return statusMap[status]
+      return statusMap[status];
     },
   },
   data() {
@@ -227,9 +233,18 @@ export default {
     };
   },
   async created() {
+    console.log(this.$route);
     this.fetchData();
   },
   methods: {
+    jumptoDetial(id) {
+      this.$router.push({
+        path: "/product/index",
+        query: {
+          id: id,
+        },
+      });
+    },
     async fetchData() {
       const a = await ethereum.request({ method: "eth_requestAccounts" });
       let acc = a[0];
@@ -246,9 +261,9 @@ export default {
 
       for (let k = 0; k < parseInt(productNumber); k++) {
         var p = await contract.getProductById(k + 1);
-        
-        var productimage = await request("http://localhost:8080/ipfs/" + p[3])
-        var productdesc = await request("http://localhost:8080/ipfs/" + p[4])
+
+        var productimage = await request("http://localhost:8080/ipfs/" + p[3]);
+        var productdesc = await request("http://localhost:8080/ipfs/" + p[4]);
 
         var product = {
           id: p[0],
@@ -258,8 +273,8 @@ export default {
           desc: productdesc,
           starttime: parseTime(p[5] * 1000),
           endtime: parseTime(p[6] * 1000),
-          price: Web3.utils.fromWei(p[7], "ether") + ' ETH',
-          neworold: parseInt(p[8]),
+          price: Web3.utils.fromWei(p[7], "ether") + " ETH",
+          condition: parseInt(p[8]),
         };
 
         productList.push(product);

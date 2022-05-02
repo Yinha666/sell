@@ -61,7 +61,7 @@
       </el-form-item>
 
       <el-form-item label="商品条件">
-        <el-select v-model="form.neworold" placeholder="请选择商品条件">
+        <el-select v-model="form.condition" placeholder="请选择商品条件">
           <el-option label="新的" value="1"></el-option>
           <el-option label="旧的" value="0"></el-option>
         </el-select>
@@ -109,12 +109,12 @@
 
 <script>
 const Web3 = require("web3");
-const ipfsAPI = require("ipfs-api");
 
 const contract = require("truffle-contract");
 const ecommerce_store_artifacts = require("../abi/EcommerceStore.json");
 var EcommerceStore = contract(ecommerce_store_artifacts); //['abi']]
 
+const ipfsAPI = require("ipfs-api");
 const ipfs = ipfsAPI({
   host: "127.0.0.1",
   port: "5001",
@@ -122,16 +122,14 @@ const ipfs = ipfsAPI({
 });
 
 export default {
-  created() {
-
-  },
+  created() {},
   data() {
     return {
       form: {
         name: "",
         type: "",
         price: "",
-        neworold: "",
+        condition: "",
         date: "",
         days: "",
         image: "",
@@ -149,7 +147,7 @@ export default {
       };
     },
     async onSubmit() {
-      console.log(this.form)
+      console.log(this.form);
 
       const a = await ethereum.request({ method: "eth_requestAccounts" });
       let acc = a[0];
@@ -157,7 +155,6 @@ export default {
 
       const image = this.form.image;
       const desc = this.form.desc;
-
 
       if (!image || !desc) {
         console.log("empty");
@@ -168,41 +165,41 @@ export default {
       const deschash = await ipfs.add(Buffer.from(desc, "utf-8"));
 
       // console.log(imagehash)
-      
+
       const imageid = imagehash[0].hash;
       const descid = deschash[0].hash;
 
       console.log(imageid);
       console.log(descid);
 
-
       var provider = new Web3.providers.HttpProvider("http://localhost:8545");
       EcommerceStore.setProvider(provider);
       let contract = await EcommerceStore.deployed();
 
-      let bb = await contract.hello()
+      let bb = await contract.hello();
       console.log(bb);
-      
 
       let auctionStartTime = this.form.date / 1000;
       let auctionEndTime = auctionStartTime + this.form.days * 24 * 60 * 60;
-      
-      contract.addProductToStore(
-        this.form.name,
-        this.form.type,
-        imageid,
-        descid,
-        auctionStartTime,
-        auctionEndTime,
-        Web3.utils.toWei(this.form.price, "ether"),
-        parseInt(this.form.neworold),
-        {
-          from: acc,
-          gas: 623164,
-        }
-      ).then(function (f) {
-        console.log(f);
-      });
+
+      contract
+        .addProductToStore(
+          this.form.name,
+          this.form.type,
+          imageid,
+          descid,
+          auctionStartTime,
+          auctionEndTime,
+          Web3.utils.toWei(this.form.price, "ether"),
+          parseInt(this.form.condition),
+          {
+            from: acc,
+            gas: 623164,
+          }
+        )
+        .then(function (f) {
+          console.log(f);
+        });
     },
     onCancel() {
       this.$message({

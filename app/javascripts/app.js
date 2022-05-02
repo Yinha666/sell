@@ -345,7 +345,24 @@ function saveProductToBlockchain(params, imageId, descId) {
   let auctionEndTime = auctionStartTime + parseInt(params["product-auction-end"]) * 24 * 60 * 60;
   console.log(EcommerceStore);
   EcommerceStore.deployed().then(function(i) {
-    
+    i.addProductToStore(
+      params["product-name"], 
+      params["product-category"], 
+      imageId, 
+      descId, 
+      auctionStartTime,
+      auctionEndTime, 
+      web3.toWei(params["product-price"], 'ether'),
+      parseInt(params["product-condition"]),
+      {
+        from: web3.eth.accounts[0],
+        gas: 623164
+      }
+    ).then(function(f) {
+      console.log(f);
+      $("#msg").show();
+      $("#msg").html("Your product was successfully added to your store!");
+    })
   });
 }
 

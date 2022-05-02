@@ -4,7 +4,7 @@ const data = Mock.mock({
   'items|30': [{
     image: "https://booking.demo.fastadmin.net/uploads/20210301/264852e5df946e3347bf1ad8502b4dd5.jpg",
     name: "房子",
-    'neworold|1': ["新","旧"],
+    'condition|1': ["新", "旧"],
     price: 100,
     starttime: "@datetime",
     endtime: "@datetime",
@@ -15,7 +15,7 @@ const addrbuy = Mock.mock({
   'items|30': [{
     image: "https://booking.demo.fastadmin.net/uploads/20210301/264852e5df946e3347bf1ad8502b4dd5.jpg",
     name: "房子",
-    'neworold|1': ["新","旧"],
+    'condition|1': ["新", "旧"],
     price: 100,
     starttime: "@datetime",
     endtime: "@datetime",
@@ -27,7 +27,7 @@ const addrsell = Mock.mock({
   'items|30': [{
     image: "https://booking.demo.fastadmin.net/uploads/20210301/264852e5df946e3347bf1ad8502b4dd5.jpg",
     name: "房子",
-    'neworold|1': ["新","旧"],
+    'condition|1': ["新", "旧"],
     price: 100,
     starttime: "@datetime",
     endtime: "@datetime",
