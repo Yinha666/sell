@@ -47,7 +47,7 @@
             </el-form>
           </div>
         </el-col>
-        <el-col :span="12">
+        <el-col :span="22">
         <div v-if="this.formtype == 2">
            Reveal Bid
           <el-form
