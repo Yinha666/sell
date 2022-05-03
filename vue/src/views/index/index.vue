@@ -96,6 +96,61 @@
       </el-table-column>
     </el-table>
 
+    <h2>当前账户发布拍卖记录</h2>
+    <el-table :data="addrsellList" border style="width: 100%">
+
+      <el-table-column align="center" label="ID" min-width="20">
+        <template slot-scope="scope">
+          {{ scope.row.id }}
+        </template>
+      </el-table-column>
+
+      <el-table-column label="图片" align="center">
+        <template slot-scope="scope">
+          <el-image
+            style="width: 100px; height: 100px"
+            :src="scope.row.image"
+            :preview-src-list="[scope.row.image]"
+          >
+          </el-image>
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" label="名字" min-width="40">
+        <template slot-scope="scope">
+          {{ scope.row.name }}
+        </template>
+      </el-table-column>
+      <!-- <el-table-column align="center" label="新/旧">
+        <template slot-scope="scope">
+          {{ scope.row.condition }}
+        </template> </el-table-column
+      > -->
+      <el-table-column align="center" label="出价" min-width="40">
+        <template slot-scope="scope">
+          {{ scope.row.price }}
+        </template> </el-table-column
+      ><el-table-column align="center" label="起拍时间">
+        <template slot-scope="scope">
+          {{ scope.row.starttime }}
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" label="结束时间">
+        <template slot-scope="scope">
+          {{ scope.row.endtime }}
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" label="拍卖状态">
+        <template slot-scope="scope">
+          <el-tag :type="scope.row.status | statusFilter">{{
+            scope.row.status | statusTextFilter
+          }}</el-tag>
+        </template>
+      </el-table-column>
+    </el-table>
+
     <h2>当前账户购买记录</h2>
     <el-table :data="addrbuyList" border style="width: 100%">
 
@@ -151,74 +206,28 @@
       </el-table-column>
     </el-table>
 
-    <h2>当前账户发布拍卖记录</h2>
-    <el-table :data="addrsellList" border style="width: 100%">
-
-      <el-table-column align="center" label="ID" min-width="20">
-        <template slot-scope="scope">
-          {{ scope.row.id }}
-        </template>
-      </el-table-column>
-
-      <el-table-column label="图片" align="center">
-        <template slot-scope="scope">
-          <el-image
-            style="width: 100px; height: 100px"
-            :src="scope.row.image"
-            :preview-src-list="[scope.row.image]"
-          >
-          </el-image>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" label="名字" min-width="40">
-        <template slot-scope="scope">
-          {{ scope.row.name }}
-        </template>
-      </el-table-column>
-      <!-- <el-table-column align="center" label="新/旧">
-        <template slot-scope="scope">
-          {{ scope.row.condition }}
-        </template> </el-table-column
-      > -->
-      <el-table-column align="center" label="出价" min-width="40">
-        <template slot-scope="scope">
-          {{ scope.row.price }}
-        </template> </el-table-column
-      ><el-table-column align="center" label="起拍时间">
-        <template slot-scope="scope">
-          {{ scope.row.starttime }}
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" label="结束时间">
-        <template slot-scope="scope">
-          {{ scope.row.endtime }}
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" label="拍卖状态">
-        <template slot-scope="scope">
-          <el-tag :type="scope.row.status | statusFilter">{{
-            scope.row.status | statusTextFilter
-          }}</el-tag>
-        </template>
-      </el-table-column>
-    </el-table>
+    
   </div>
 </template>
 
 <script>
 import { parseTime } from "@/utils";
-import request from "@/utils/request";
+import request from '@/utils/request'
 import detectEthereumProvider from '@metamask/detect-provider';
-
 
 const Web3 = require("web3");
 
 const contract = require("truffle-contract");
-const ecommerce_store_artifacts = require("../abi/EcommerceStore.json");
+const ecommerce_store_artifacts = require("@/../../build/contracts/EcommerceStore.json");
+
 var EcommerceStore = contract(ecommerce_store_artifacts); //['abi']]
+
+const ipfsAPI = require("ipfs-api");
+const ipfs = ipfsAPI({
+  host: "127.0.0.1",
+  port: "5001",
+  protocol: "http",
+});
 
 export default {
   filters: {
@@ -269,6 +278,9 @@ export default {
       });
     },
     async fetchData() {
+
+
+
       const a = await ethereum.request({ method: "eth_requestAccounts" });
       let acc = a[0];
       this.acc = acc
@@ -276,18 +288,16 @@ export default {
 
       var provider = await detectEthereumProvider();
       EcommerceStore.setProvider(provider);
-      let contract = await EcommerceStore.deployed();
+      this.contract = await EcommerceStore.deployed();
 
-      let tmp = await contract.hello()
-      console.log(tmp);
       
       var productList = [];
-      const productNumber = await contract.productIndex();
+      const productNumber = await this.contract.productIndex();
       console.log("产品数量", parseInt(productNumber));
 
       for (let k = 0; k < parseInt(productNumber); k++) {
-        var p = await contract.getProductById(k + 1);
-        var owner = await contract.getAccountOfId(k + 1)
+        var p = await this.contract.getProductById(k + 1);
+        var owner = await this.contract.getAccountOfId(k + 1)
         owner = owner.toLowerCase()
 
         console.log(owner)
@@ -313,10 +323,14 @@ export default {
 
       this.listLoading = true;
 
-      this.list = productList;
 
 
-      // this.addrbuyList = res.data.slice(0, 3);
+      productList.forEach(ele => {
+        if (ele.status == 0){
+        this.list.push(ele)
+        }
+      })
+
       productList.forEach(ele => {
         this.addrbuyList.push(ele)
       })
@@ -328,6 +342,8 @@ export default {
         }
         this.listLoading = false
       })
+      this.listLoading = false
+
 
     },
   },

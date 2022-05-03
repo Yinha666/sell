@@ -43,6 +43,10 @@ export default {
   },
   async created() {
     console.log('@@@', 'navbar created');
+    const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+    this.islogin = true
+    console.log(accounts);
+    this.account = accounts[0]
     
   },
   methods: {

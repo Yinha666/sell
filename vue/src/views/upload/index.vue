@@ -125,7 +125,16 @@ const ipfs = ipfsAPI({
 });
 
 export default {
-  created() {},
+  async created() {
+      
+    var provider = await detectEthereumProvider();
+    EcommerceStore.setProvider(provider);
+    let contract = await EcommerceStore.deployed();
+
+    let bb = await contract.hello();
+    console.log(bb)
+
+  },
   data() {
     return {
       form: {
@@ -175,8 +184,9 @@ export default {
       console.log(imageid);
       console.log(descid);
 
+      var provider = new Web3.providers.HttpProvider("http://localhost:7545");
       
-      var provider = new Web3.providers.HttpProvider("http://localhost:8545");
+      // provider = new Web3.providers.HttpProvider("http://localhost:8545");
       provider = await detectEthereumProvider();
       EcommerceStore.setProvider(provider);
       let contract = await EcommerceStore.deployed();
