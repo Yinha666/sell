@@ -188,7 +188,11 @@ export default {
 
 
       let auctionStartTime = this.form.date / 1000;
+      
       let auctionEndTime = auctionStartTime + this.form.days * 24 * 60 * 60;
+
+      // for test endtime = startime + 1s
+      auctionEndTime = auctionStartTime + this.form.days * 60 * 3;
 
       contract
         .addProductToStore(

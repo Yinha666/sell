@@ -38,7 +38,7 @@
       fit
       highlight-current-row
     >
-      <el-table-column align="center" label="ID">
+      <el-table-column align="center" label="ID" min-width="20">
         <template slot-scope="scope">
           {{ scope.row.id }}
         </template>
@@ -55,7 +55,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="名字" align="center">
+      <el-table-column label="名字" align="center" min-width="40">
         <template slot-scope="scope">
           {{ scope.row.name }}
         </template>
@@ -67,7 +67,7 @@
         </template>
       </el-table-column> -->
 
-      <el-table-column label="起拍价格" align="center">
+      <el-table-column label="起拍价格" align="center" min-width="40">
         <template slot-scope="scope">
           {{ scope.row.price }}
         </template>

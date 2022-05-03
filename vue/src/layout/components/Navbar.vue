@@ -42,10 +42,8 @@ export default {
     ])
   },
   async created() {
-    console.log(ethereum.selectedAddress);
+    console.log('@@@', 'navbar created');
     
-    // const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-    // console.log(accounts)
   },
   methods: {
     async logout() {
