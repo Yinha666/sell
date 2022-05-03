@@ -96,9 +96,15 @@
       </el-table-column>
     </el-table>
 
-    <h2>当前账户拍卖记录</h2>
-
+    <h2>当前账户购买记录</h2>
     <el-table :data="addrbuyList" border style="width: 100%">
+
+      <el-table-column align="center" label="ID" min-width="20">
+        <template slot-scope="scope">
+          {{ scope.row.id }}
+        </template>
+      </el-table-column>
+
       <el-table-column label="图片" align="center">
         <template slot-scope="scope">
           <el-image
@@ -110,17 +116,17 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="名字">
+      <el-table-column align="center" label="名字" min-width="40">
         <template slot-scope="scope">
           {{ scope.row.name }}
         </template>
       </el-table-column>
-
-      <el-table-column align="center" label="新/旧">
+      <!-- <el-table-column align="center" label="新/旧">
         <template slot-scope="scope">
           {{ scope.row.condition }}
         </template> </el-table-column
-      ><el-table-column align="center" label="出价">
+      > -->
+      <el-table-column align="center" label="出价" min-width="40">
         <template slot-scope="scope">
           {{ scope.row.price }}
         </template> </el-table-column
@@ -139,14 +145,21 @@
       <el-table-column align="center" label="拍卖状态">
         <template slot-scope="scope">
           <el-tag :type="scope.row.status | statusFilter">{{
-            scope.row.status
+            scope.row.status | statusTextFilter
           }}</el-tag>
         </template>
       </el-table-column>
     </el-table>
 
     <h2>当前账户发布拍卖记录</h2>
-    <el-table :data="addrbuyList" border style="width: 100%">
+    <el-table :data="addrsellList" border style="width: 100%">
+
+      <el-table-column align="center" label="ID" min-width="20">
+        <template slot-scope="scope">
+          {{ scope.row.id }}
+        </template>
+      </el-table-column>
+
       <el-table-column label="图片" align="center">
         <template slot-scope="scope">
           <el-image
@@ -158,16 +171,17 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="名字">
+      <el-table-column align="center" label="名字" min-width="40">
         <template slot-scope="scope">
           {{ scope.row.name }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="新/旧">
+      <!-- <el-table-column align="center" label="新/旧">
         <template slot-scope="scope">
           {{ scope.row.condition }}
         </template> </el-table-column
-      ><el-table-column align="center" label="出价">
+      > -->
+      <el-table-column align="center" label="出价" min-width="40">
         <template slot-scope="scope">
           {{ scope.row.price }}
         </template> </el-table-column
@@ -186,7 +200,7 @@
       <el-table-column align="center" label="拍卖状态">
         <template slot-scope="scope">
           <el-tag :type="scope.row.status | statusFilter">{{
-            scope.row.status
+            scope.row.status | statusTextFilter
           }}</el-tag>
         </template>
       </el-table-column>
@@ -195,7 +209,6 @@
 </template>
 
 <script>
-import { sellList, addrbuyList, addrsellList } from "@/api/sell";
 import { parseTime } from "@/utils";
 import request from "@/utils/request";
 import detectEthereumProvider from '@metamask/detect-provider';
@@ -211,9 +224,17 @@ export default {
   filters: {
     statusFilter(status) {
       const statusMap = {
-        拍卖中: "primary",
-        拍卖成功: "success",
-        拍卖失败: "danger",
+        0: "primary",
+        1: "success",
+        2: "danger",
+      };
+      return statusMap[status];
+    },
+    statusTextFilter(status) {
+      const statusMap = {
+        0: "拍卖中",
+        1: "拍卖成功",
+        2: "拍卖失败",
       };
       return statusMap[status];
     },
@@ -227,9 +248,9 @@ export default {
   },
   data() {
     return {
-      list: null,
-      addrbuyList: null,
-      addrsellList: null,
+      list: [],
+      addrbuyList: [],
+      addrsellList: [],
 
       listLoading: true,
     };
@@ -250,6 +271,7 @@ export default {
     async fetchData() {
       const a = await ethereum.request({ method: "eth_requestAccounts" });
       let acc = a[0];
+      this.acc = acc
       console.log(acc);
 
       var provider = await detectEthereumProvider();
@@ -265,7 +287,10 @@ export default {
 
       for (let k = 0; k < parseInt(productNumber); k++) {
         var p = await contract.getProductById(k + 1);
-        console.log(p)
+        var owner = await contract.getAccountOfId(k + 1)
+        owner = owner.toLowerCase()
+
+        console.log(owner)
 
         var productimage = await request("http://localhost:8080/ipfs/" + p[3]);
         var productdesc = await request("http://localhost:8080/ipfs/" + p[4]);
@@ -279,7 +304,8 @@ export default {
           starttime: parseTime(p[5] * 1000),
           endtime: parseTime(p[6] * 1000),
           price: Web3.utils.fromWei(p[7], "ether") + " ETH",
-          condition: parseInt(p[8]),
+          status: parseInt(p[8]),
+          owner
         };
 
         productList.push(product);
@@ -287,19 +313,22 @@ export default {
 
       this.listLoading = true;
 
-      sellList().then((response) => {
-        this.list = productList;
-        console.log("@@@", this.list);
-      });
+      this.list = productList;
 
-      addrbuyList().then((res) => {
-        this.addrbuyList = res.data.slice(0, 3);
-      });
 
-      addrsellList().then((res) => {
-        this.addrsellList = res.data.slice(0, 3);
-        this.listLoading = false;
-      });
+      // this.addrbuyList = res.data.slice(0, 3);
+      productList.forEach(ele => {
+        this.addrbuyList.push(ele)
+      })
+
+
+      productList.forEach(ele => {
+        if (ele.owner == this.acc){
+          this.addrsellList.push(ele) 
+        }
+        this.listLoading = false
+      })
+
     },
   },
 };
