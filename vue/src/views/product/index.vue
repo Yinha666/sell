@@ -75,7 +75,7 @@
             </el-form-item>
 
             <el-form-item>
-              <el-button type="primary" click="">Reveal Bid</el-button>
+              <el-button type="primary" @click="reveal">Reveal Bid</el-button>
             </el-form-item>
           </el-form>
         </div>
@@ -167,7 +167,7 @@ export default {
       
     }else if (currentTime < parseInt(product.endtime)){
       console.log("bidding show")
-      this.formtype = 1
+      this.formtype = 2
     }
 
 
@@ -244,6 +244,23 @@ export default {
     };
   },
   methods: {
+    async reveal(){
+      console.log("reaveal")
+
+      let amount = this.form2.bid
+      let secretText = this.form2.secret
+      let productId = this.id
+      this.contract.revealBid(parseInt(productId), amount, secretText, {
+          from: this.acc,
+          gas: 440000
+        }).then(
+          function(f) {
+            console.log("Your bid has been successfully revealed!");
+            console.log(f)
+          }
+        )
+
+    },
     async bid(){
 
       let amount = this.form.price
@@ -260,22 +277,6 @@ export default {
         from: this.acc,
         gas: 440000
       })
-      // this.contract.bid(parseInt(productId), bytesHash, {
-      //   from: this.acc,
-      //   value: 0x20
-
-      // }).then(result => {
-      //   this.contract.testHash(bigNumberAmount.toNumber(), secretText).then(r => {
-      //     // ecommerceStoreInstance.testHash(bidAmount, secretText).then(r => {
-      //     console.log('hash1 :', r)
-      //   })
-      //   // console.log('bid result :', result)
-      //   // location.reload(true)
-
-      // }).catch(e => {
-      //   console.log('bid err :', e)
-
-      // })
     }
   },
 };

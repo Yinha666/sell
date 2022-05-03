@@ -13,6 +13,7 @@ require('babel-register')
 module.exports = {
   networks: {
     develop: {
+      defaultEtherBalance: 50000,
       host: 'localhost',
       port: 8545,
       network_id: '*' // Match any network id
