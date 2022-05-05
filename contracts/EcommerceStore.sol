@@ -110,7 +110,8 @@ contract EcommerceStore {
     require(now <= product.auctionEndTime);
     require(msg.value > product.startPrice);
     require(product.bids[msg.sender][_bytesHash].bidder == address(0));
-    product.bids[msg.sender][_bytesHash] = Bid(_productId, msg.value, false, msg.sender);
+    //product.bids[msg.sender][_bytesHash] = Bid(_productId, msg.value, false, msg.sender);
+    product.bids[msg.sender][_bytesHash] = Bid({productId:_productId, price:msg.value, isRevealed:false, bidder:msg.sender});
     product.totalBids ++;
   }
 
